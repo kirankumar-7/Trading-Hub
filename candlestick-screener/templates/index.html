@@ -1,0 +1,67 @@
+<html>
+<head>
+    <style>
+        body { font-family: arial; margin: 20px; }
+        td { padding: 5px; }
+        .bullish { background: green; color: white; }
+        .bearish { background: red; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Technical Scanner</h1>
+    <form>
+        <select name="pattern">
+            <option value="">-- Select a Pattern --</option>
+            {% for key in candlestick_patterns %}
+                <option value="{{ key }}" {% if pattern == key %}selected="selected"{% endif %}>{{ candlestick_patterns[key] }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Scan" />
+    </form>
+
+    <table>
+        <tr>
+            <th>Symbol</th>
+            <th>Company</th>
+            <th>Signal</th>
+        </tr>
+        {% for symbol, details in crypto.items() %}
+            {% set signal = details.get(pattern, '') %}
+            {% if signal %}  <!-- Only display row if a valid signal exists -->
+            <tr>
+                <td>{{ symbol }}</td>
+                <td>{{ details.get('company', 'N/A') }}</td>
+                <td class="{{ signal }}">{{ signal }}</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <!-- TradingView Widget BEGIN -->
+                        <div class="tradingview-widget-container" style="height:500px%;width:600%">
+                            <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+                            <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                            {
+                            "width": 1400,
+                            "height": 500,
+                            "symbol": "BINANCE:{{ symbol }}",
+                            "interval": "D",
+                            "timezone": "Asia/Kolkata",
+                            "theme": "light",
+                            "style": "1",
+                            "locale": "en",
+                            "allow_symbol_change": true,
+                            "calendar": false,
+                            "support_host": "https://www.tradingview.com"
+                            }
+                            </script>
+                        </div>
+                        <!-- TradingView Widget END -->
+                </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    
+</body>
+</html>
